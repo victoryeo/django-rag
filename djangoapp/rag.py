@@ -54,11 +54,13 @@ def build_vector_store():
             )
         ),
     )
+    # load documents
     docs = loader.load()    
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    # split documents
     all_splits = text_splitter.split_documents(docs)
 
-    # Index chunks
+    # stored indexed chunks
     _ = vector_store.add_documents(documents=all_splits)
 
     vector_store_ready = True
@@ -69,11 +71,11 @@ def answer_query(query):
     #prompt = client.pull_prompt("rlm/rag-prompt", include_model=True)
     #docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     #messages = prompt.invoke({"question": state["question"], "context": docs_content})
+
+    # Define prompt for question-answering
     template = """Question: {question}
 
     Answer: Let's think step by step."""
-
-    # Define prompt for question-answering
     prompt = PromptTemplate.from_template(template)      
 
     # Define application steps
@@ -86,12 +88,14 @@ def answer_query(query):
         response = llm_chain.invoke(state["question"])
         return {"answer": response}
 
-    # Compile application and test
+    # retrieval and generation
     graph_builder = StateGraph(State).add_sequence([retrieve, generate])
     graph_builder.add_edge(START, "retrieve")
+    # Compile application 
     graph = graph_builder.compile()
 
     print("query", query)
+    # invoke using langgraph
     response = graph.invoke({"question": query})
     print(response["answer"])
     result = {}
