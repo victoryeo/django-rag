@@ -13,10 +13,12 @@ from typing_extensions import List, TypedDict
 from langsmith import Client
 from langchain.chains import LLMChain
 from langchain_core.prompts import PromptTemplate
+from langchain_groq import ChatGroq
 
 load_dotenv()
 
-#print(os.getenv("HUGGINGFACEHUB_API_TOKEN"))
+print("h token",os.getenv("HUGGINGFACEHUB_API_TOKEN"))
+print("g token",os.getenv("GROQ_API_KEY"))
 
 # Define state for application
 class State(TypedDict):
@@ -25,13 +27,14 @@ class State(TypedDict):
     answer: str
 
 # chat model
-llm = HuggingFaceEndpoint(
-    repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+"""llm = HuggingFaceEndpoint(
+    repo_id="Groq/Llama-3-Groq-8B-Tool-Use",
     max_length=128,
     temperature=0.1,
     task="text-generation",  #HuggingFaceEndpoint Requires Explicit task Argument
     huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
-)
+)"""
+llm = ChatGroq(temperature=0.7, model_name="llama-3.3-70b-versatile")
 
 # embeddings model
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")

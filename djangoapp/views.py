@@ -25,9 +25,13 @@ def index(request):
             query = body
         # Process the query using the chatbot logic defined in `logic.py`.
         result = answer_query(query)
-        print("result1", result)
+        print("result1", result['answer'])
         # Return the chatbot's response as JSON.
-        resultJson = JsonResponse(result)
+        resultContent = result['answer'].content
+        resultTemp = {}
+        resultTemp["answer"] = resultContent
+        resultTemp["sources"] = result['sources']
+        resultJson = JsonResponse(resultTemp)
         print(resultJson)
         print("return result")
         return resultJson
